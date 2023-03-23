@@ -6,7 +6,7 @@ import openpyxl
 #參數
 wb = openpyxl.load_workbook("sample.xlsx")     # 開啟 Excel 檔案
 names = wb.sheetnames    # 讀取 Excel 裡所有工作表名稱
-sheet = wb["data"]        # 取得工作表名稱為「工作表1」的內容
+sheet = wb["data"]        # 取得工作表名稱為「data」的內容
 Email = []
 Name = []
 Staffno = []
