@@ -38,7 +38,7 @@ def read_xlsx(wb, mail_to, Name, Staffno, LastDate) :
             if j == 3 : #LastDate
                 LastDate.append(v.value)
                 days = (v.value-Today).days + 1
-                if days <= 3 :
+                if days <= -1 :
                     send_mail(Name[i], Staffno[i], LastDate[i], mail_to[i], sign)
     
 read_xlsx(wb, Email, Name, Staffno, LastDate)
