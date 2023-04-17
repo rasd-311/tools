@@ -1,4 +1,4 @@
-#到期自動發email提醒 v1.1
+#到期自動發email提醒 v0.2
 import datetime
 import win32com.client as win32
 import openpyxl
