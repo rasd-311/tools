@@ -13,7 +13,7 @@ Staffno = []
 LastDate = []
 cc = ""
 
-def read_cc(wb, cc):
+def get_sheet(wb, data):
     for i in range(sheet.max_row-3) : #max_row 最大列數
         for j in range(sheet.max_column) : #max_column 最大行數
             v = sheet.cell(row=i+2, column=j+1)
@@ -28,4 +28,4 @@ def read_cc(wb, cc):
                 cc = cc + str(v.value) + ";"
     #print(cc)
     return cc
-cc = read_cc(wb, cc)
+cc = get_sheet(wb, cc)
