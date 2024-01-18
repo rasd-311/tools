@@ -16,14 +16,11 @@ keepalive = ""
 def get_sheet(wb, sheet):
     sheet = wb[sheet]        # 取得工作表名稱為「sheet」的內容
     sheet_list = ""
-    cal_null = 0 #判斷空行參數, 防止中間有空行報錯
     for i in range(sheet.max_row-1) : #max_row 最大列數
         for j in range(sheet.max_column) : #max_column 最大行數
             v = sheet.cell(row=i+2, column=j+1)
             if v.value is None :
-                cal_null = cal_null + 1
-                if cal_null == 99999: #判斷空行用, 防止中間有空行報錯
-                    break
+                break
             if j == 0 :
                 sheet_list = sheet_list + str(v.value) + ";"
     print("sheet_list : " + sheet_list)
