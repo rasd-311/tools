@@ -1,4 +1,4 @@
-#到期自動發email提醒 v1.0
+#到期自動發email提醒 v2.0
 import win32com.client as win32
 import openpyxl
 from datetime import datetime
@@ -37,34 +37,36 @@ def send_mail(Name, Staffno, LastDate, mail_to, days, cc):
     mail.SentOnBehalfOfName = "License_Reminder@xxxxx.com"  #寄件人
     mail.To = mail_to  #收件人
     mail.CC = cc
-    mail.Subject = "Aircraft Maintenance Personnel License expired reminder_維修執照到期提醒"  #主旨
+    mail.Subject = "維修執照到期提醒"  #主旨
     date = LastDate.strftime("%Y-%m-%d")
-    mail.Body = "Dear " + Name +",\n (" + str(Staffno) + ") ,\n\n" + "請注意, 你的執照在 " + date + " 過期\n若已更換, 請通知相關負責人更新記錄, 謝謝!"+"\n\nYour A320 model endorsement for maintenance license expired in "+ date + "\nif it has been replaced, please notify the relevant person in charge to update the record, thank you!"
+    mail.Body = "Dear " + Name +",\n (" + str(Staffno) + ") ,\n\n" + "請注意, 你的執照在 " + date + " 過期\n若已更換, 請通知相關負責人更新記錄, 謝謝!"
     mail.Send()       #發送
     print("已發送給  "+Name+"("+str(Staffno)+")  提醒郵件")
 
 def main(wb, mail_to, Name, Staffno, LastDate, cc) :
+    skip_conut = 0 #計算跳過無效email
     sheet = wb["data"]
-    Today = datetime.today()
+    Today = datetime.datetime.today()
     print("NOW : "+str(Today))
-    for sheet_row in range(sheet.max_row-1) : #max_row 最大列數
-        for sheet_column in range(sheet.max_column) : #max_column 最大行數
-            v = sheet.cell(row=sheet_row+2, column=sheet_column+1)
-            if v.value is None :
-                break
-            if sheet_column == 0 : #mail_to
+    for sheet_row in range(sheet.max_row) : #max_row 最大列數
+        for sheet_column in range(4) : #max_column 最大行數
+            v = sheet.cell(row=sheet_row + 1, column=sheet_column + 1)
+            if sheet_column == 0 and ("@test.com" in v.value) == True : #mail_to, 判定是否為有效電郵地址
                 mail_to.append(v.value)
-            if sheet_column == 1 : #Name         
+            if sheet_column == 0 and ("@test.com" in v.value) == False: #如不是有效電郵地址, 跳過
+                skip_conut = skip_conut + 1
+                break
+            if sheet_column == 1 : #Name     
                 Name.append(v.value)
             if sheet_column == 2 : #Staffno
                 Staffno.append(str(v.value))
             if sheet_column == 3 : #LastDate
                 LastDate.append(v.value)
                 days = (v.value-Today).days + 1
+                if days <= 7 :
+                    i = sheet_row - skip_conut
+                    send_mail(Name[i], Staffno[i], LastDate[i], mail_to[i], days, cc)
                 
-                if days <= 7 and days >= 0 :
-                    send_mail(Name[sheet_row], Staffno[sheet_row], LastDate[sheet_row], mail_to[sheet_row], days, cc)
-
 
 main(wb, Email, Name, Staffno, LastDate, cc)
 
@@ -73,9 +75,9 @@ def keepalive_mail(keepalive) :
     mail = outlook.CreateItem(0)
     mail.SentOnBehalfOfName = "keepalive@xxxxx.com"  #寄件人
     mail.To = keepalive  #收件人
-    mail.Subject = "已執行"  #主旨
+    mail.Subject = "到期郵件提醒程序已執行"  #主旨
     current_dateTime = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
-    mail.Body = current_dateTime + "\nLicense_Reminder主機(192.168.18.40)仍正常運行中\n維修執照的A320机型签注到期郵件提醒程序已執行"
+    mail.Body = current_dateTime + "\nLicense_Reminder主機仍正常運行中\n到期郵件提醒程序已執行"
     mail.Send()       #發送
 
 keepalive_mail(keepalive)
