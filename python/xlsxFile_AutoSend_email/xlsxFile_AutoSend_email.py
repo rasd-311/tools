@@ -17,14 +17,14 @@ def get_sheet(wb, sheet):
     sheet = wb[sheet]        # 取得工作表名稱為「sheet」的內容
     sheet_list = ""
     cal_null = 0 #判斷空行參數, 防止中間有空行報錯
-    for i in range(sheet.max_row-1) : #max_row 最大列數
-        for j in range(sheet.max_column) : #max_column 最大行數
-            v = sheet.cell(row=i+2, column=j+1)
+    for sheet_row in range(sheet.max_row-1) : #max_row 最大列數
+        for sheet_column in range(sheet.max_column) : #max_column 最大行數
+            v = sheet.cell(row=sheet_row+2, column=sheet_column+1)
             if v.value is None :
                 cal_null = cal_null + 1
                 if cal_null == 99999: #判斷空行用, 防止中間有空行報錯
                     break
-            if j == 0 :
+            if sheet_column == 0 :
                 sheet_list = sheet_list + str(v.value) + ";"
     print("sheet_list : " + sheet_list)
     return sheet_list
@@ -47,25 +47,23 @@ def main(wb, mail_to, Name, Staffno, LastDate, cc) :
     sheet = wb["data"]
     Today = datetime.today()
     print("NOW : "+str(Today))
-    r = sheet.max_row-1
-    c = sheet.max_column
-    for i in range(r) : #max_row 最大列數
-        for j in range(c) : #max_column 最大行數
-            v = sheet.cell(row=i+2, column=j+1)
+    for sheet_row in range(sheet.max_row-1) : #max_row 最大列數
+        for sheet_column in range(sheet.max_column) : #max_column 最大行數
+            v = sheet.cell(row=sheet_row+2, column=sheet_column+1)
             if v.value is None :
                 break
-            if j == 0 : #mail_to
+            if sheet_column == 0 : #mail_to
                 mail_to.append(v.value)
-            if j == 1 : #Name         
+            if sheet_column == 1 : #Name         
                 Name.append(v.value)
-            if j == 2 : #Staffno
+            if sheet_column == 2 : #Staffno
                 Staffno.append(str(v.value))
-            if j == 3 : #LastDate
+            if sheet_column == 3 : #LastDate
                 LastDate.append(v.value)
                 days = (v.value-Today).days + 1
                 
                 if days <= 7 and days >= 0 :
-                    send_mail(Name[i], Staffno[i], LastDate[i], mail_to[i], days, cc)
+                    send_mail(Name[sheet_row], Staffno[sheet_row], LastDate[sheet_row], mail_to[sheet_row], days, cc)
 
 
 main(wb, Email, Name, Staffno, LastDate, cc)
